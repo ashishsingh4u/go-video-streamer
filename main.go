@@ -47,6 +47,9 @@ func main() {
 	machineIP := fmt.Sprintf("%s:%s", conf.SERVER_IP, conf.PORT)
 	log.Printf("Server will be starting on %s\n", machineIP)
 
+	router.StaticFile("/", "./static/browse/index.html")
+	router.StaticFile("/favicon.ico", "./resources/favicon.ico")
+	router.SetTrustedProxies([]string{conf.SERVER_IP})
 	router.Static("/browse", "./static/browse")
 	router.Run(machineIP)
 }
