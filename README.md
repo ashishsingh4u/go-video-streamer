@@ -39,7 +39,17 @@ ffmpeg -i caminandes_llamigos_1080p_hevc.mp4 \
   -var_stream_map "v:0,a:0 v:1,a:1 v:2,a:2" stream_%v/stream.m3u8
 ```
 
+## mp4dash DASH + HLS Generator
+
+`https://ottverse.com/bento4-mp4dash-for-mpeg-dash-packaging/`
+
+```bash
+mp4fragment --fragment-duration 4000 caminandes_llamigos_1080p_hevc.mp4 frag_caminandes_llamigos_1080p_hevc.mp4
+mp4info frag_caminandes_llamigos_1080p_hevc.mp4
+mp4dash --mpd-name stream.mpd frag_caminandes_llamigos_1080p_hevc.mp4 --hls
+```
+
 ## URLs
 
-- `http://localhost:8080/browse/hls/1280.m3u8`
 - `http://localhost:8080/browse/hls/master.m3u8`
+- `http://localhost:8080/browse/hls/stream.mpd`
