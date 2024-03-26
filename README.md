@@ -11,6 +11,21 @@
 - `go get -u github.com/gin-gonic/gin`
 - `go get github.com/tkanos/gonfig`
 
+## To build and run
+
+### Build
+
+- `go build .`
+
+### Upgrade dependencies
+
+- `go get -u`
+- `go mod tidy`
+
+### Run
+
+- `./go-video-streamer`
+
 ## FFMPEG HLS Generator
 
 `https://ottverse.com/hls-packaging-using-ffmpeg-live-vod/`
@@ -42,14 +57,37 @@ ffmpeg -i caminandes_llamigos_1080p_hevc.mp4 \
 ## mp4dash DASH + HLS Generator
 
 `https://ottverse.com/bento4-mp4dash-for-mpeg-dash-packaging/`
+`https://github.com/axiomatic-systems/Bento4/issues/85`
+`https://superuser.com/questions/908280/what-is-the-correct-way-to-fix-keyframes-in-ffmpeg-for-dash`
 
 ```bash
 mp4fragment --fragment-duration 4000 caminandes_llamigos_1080p_hevc.mp4 frag_caminandes_llamigos_1080p_hevc.mp4
 mp4info frag_caminandes_llamigos_1080p_hevc.mp4
-mp4dash --mpd-name stream.mpd frag_caminandes_llamigos_1080p_hevc.mp4 --hls
+mp4dash --mpd-name=master.mpd frag_caminandes_llamigos_1080p_hevc.mp4 --hls --hls-master-playlist-name=master.m3u8
+ffmpeg -i caminandes_llamigos_1080p_hevc.mp4 -vf scale=1280:720 -preset slow -crf 18 caminandes_llamigos_720p_hevc.mp4
+
+-1 to automatically compute the aspect ratio
+ffmpeg -i caminandes_llamigos_1080p_hevc.mp4 -vf scale=640:-1 -preset slow -crf 18 caminandes_llamigos_360p.mp4
+ffmpeg -i caminandes_llamigos_1080p_hevc.mp4 -vf scale=1280:720 -preset slow -crf 18 caminandes_llamigos_720p.mp4
+ffmpeg -i caminandes_llamigos_360p.mp4 -vcodec libx265 -crf 28 caminandes_llamigos_360p_hevc.mp4
+
+ffmpeg -i caminandes_llamigos_1080p_hevc_original.mp4 -vcodec libx265 -vf scale=1280:720 caminandes_llamigos_720p_hevc.mp4
+ffmpeg -i caminandes_llamigos_1080p_hevc_original.mp4 -vcodec libx265 -vf scale=1920:1080 caminandes_llamigos_1080p_hevc.mp4
+ffmpeg -i caminandes_llamigos_1080p_hevc_original.mp4 -vcodec libx265 -vf scale=640:360 caminandes_llamigos_360p_hevc.mp4
+
+mp4fragment caminandes_llamigos_1080p_hevc.mp4 frag_caminandes_llamigos_1080p_hevc.mp4
+mp4fragment caminandes_llamigos_720p_hevc.mp4 frag_caminandes_llamigos_720p_hevc.mp4
+mp4fragment caminandes_llamigos_360p_hevc.mp4 frag_caminandes_llamigos_360p_hevc.mp4
+
+mp4dash --mpd-name=master.mpd frag_caminandes_llamigos_1080p_hevc.mp4 frag_caminandes_llamigos_720p_hevc.mp4 frag_caminandes_llamigos_360p_hevc.mp4 --hls --hls-master-playlist-name=master.m3u8
 ```
 
-## URLs
+## URLs to test streaming
+
+### HLS
 
 - `http://localhost:8080/browse/hls/master.m3u8`
+
+### DASH
+
 - `http://localhost:8080/browse/hls/stream.mpd`

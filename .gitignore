@@ -1,4 +1,5 @@
 *.db
 .vscode
 go-video-streamer
-.DS_Store
+*.DS_Store
+static/browse/.DS_Store
